@@ -8,6 +8,12 @@
         "templates/app/test/widget_test.dart.tmpl",
         "templates/app/winuwp.tmpl/.gitignore",
 
+        "templates/apex/lib/main.dart.tmpl",
+        "templates/apex/pubspec.yaml.tmpl",
+        "templates/apex/README.md.tmpl",
+        "templates/apex/test/widget_test.dart.tmpl",
+        "templates/apex/winuwp.tmpl/.gitignore",
+
         "templates/app_shared/.gitignore.tmpl",
         "templates/app_shared/.idea/libraries/Dart_SDK.xml.tmpl",
         "templates/app_shared/.idea/libraries/KotlinJavaRuntime.xml.tmpl",

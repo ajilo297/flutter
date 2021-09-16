@@ -23,6 +23,8 @@ enum FlutterProjectType {
   package,
   /// This is a native plugin project.
   plugin,
+  /// This is the apex lab starter template
+  apex
 }
 
 String flutterProjectTypeToString(FlutterProjectType type) {
