@@ -1,0 +1,35 @@
+part of 'app_cubit.dart';
+
+enum AppEnvironment { live, sandbox }
+
+abstract class AppState extends Equatable {
+  final Locale? locale;
+  final ThemeData? theme;
+
+  const AppState({this.locale = const Locale('en'), this.theme});
+
+  @override
+  List<Object?> get props => [locale, theme];
+
+  @override
+  bool? get stringify => true;
+}
+
+class AppStarting extends AppState {}
+
+class AppStarted extends AppState {
+  final AppEnvironment environment;
+
+  const AppStarted(
+      {Locale? locale, ThemeData? theme, AppEnvironment? environment})
+      : environment = environment ??
+            (kDebugMode ? AppEnvironment.sandbox : AppEnvironment.live),
+        super(locale: locale, theme: theme);
+
+  @override
+  List<Object?> get props => [locale, theme, environment];
+}
+
+class AppFirstRun extends AppState {
+  const AppFirstRun({Locale? locale}) : super(locale: locale);
+}

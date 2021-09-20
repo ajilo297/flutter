@@ -1,0 +1,163 @@
+import 'dart:async';
+
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:reactive_forms/reactive_forms.dart';
+import 'package:progress_builder/progress_builder.dart';
+import 'package:counter/themes/theme.dart';
+
+import '../bloc/app_cubit.dart';
+import '../bloc/auth_cubit.dart';
+import '../data/app_repository.dart';
+import '../utils/app_snackbar.dart';
+import '../widgets/app_logo.dart';
+import '../widgets/scrollable_column.dart';
+
+class LoginPage extends StatefulWidget {
+  const LoginPage({Key? key}) : super(key: key);
+
+  @override
+  _LoginPageState createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
+  late ScrollController _scrollController;
+  late ActionController _actionLogin;
+
+  @override
+  void initState() {
+    super.initState();
+    _actionLogin = ActionController.broadcast();
+    _scrollController = ScrollController();
+  }
+
+  FormGroup _formBuilder() => fb.group(
+        {
+          'email': FormControl<String>(
+            validators: [
+              Validators.required,
+              Validators.email,
+            ],
+            value: AppRepository.instance.prefs.getString(
+              AppRepository.kPrefsEmail,
+            ),
+          ),
+          'password': FormControl<String>(
+            validators: [
+              Validators.required,
+              Validators.minLength(6),
+            ],
+          ),
+        },
+      );
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Scaffold(
+      resizeToAvoidBottomInset: true,
+      body: ReactiveFormBuilder(
+        form: _formBuilder,
+        builder: (context, form, child) => AutofillGroup(
+          child: Center(
+            child: FractionallySizedBox(
+              widthFactor: 0.8,
+              child: ScrollableColumn(
+                controller: _scrollController,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Column(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      GestureDetector(
+                        onLongPress: () {
+                          AppCubit.instance.switchEnvironment();
+                        },
+                        child: const AppLogo(),
+                      ),
+                      Text(
+                        'Welcome to Counter',
+                        style: theme.textTheme.headline2,
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: kPadding * 3),
+                  Column(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      ReactiveTextField(
+                        formControlName: 'email',
+                        textInputAction: TextInputAction.next,
+                        textCapitalization: TextCapitalization.none,
+                        decoration: const InputDecoration(
+                          labelText: 'Email',
+                        ),
+                        validationMessages: (control) => {
+                          ValidationMessage.required: 'Email is required',
+                          ValidationMessage.email: 'Enter a valid email',
+                        },
+                      ),
+                      const SizedBox(height: kPadding * 2),
+                      ReactiveTextField(
+                        formControlName: 'password',
+                        onSubmitted: () => form.control('password').valid &&
+                                form.control('email').valid
+                            ? _actionLogin.add(ActionType.start)
+                            : null,
+                        textInputAction: TextInputAction.done,
+                        obscureText: true,
+                        textCapitalization: TextCapitalization.none,
+                        decoration: const InputDecoration(
+                          labelText: 'Password',
+                        ),
+                        validationMessages: (control) => {
+                          ValidationMessage.required: 'This field is required',
+                          ValidationMessage.minLength:
+                              'Please provide at least 6 digits password',
+                        },
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: kPadding * 3),
+                  Column(
+                    children: [
+                      LinearProgressBuilder(
+                        action: (_) async {
+                          form.unfocus();
+
+                          await context.read<AuthCubit>().loginEmail(
+                                email: form.control('email').value,
+                                password: form.control('password').value,
+                              );
+                        },
+                        onError: AppSnackbar.showException,
+                        controller: _actionLogin,
+                        builder: (context, action, error) => ElevatedButton(
+                          onPressed: (ReactiveForm.of(context)?.valid ?? false)
+                              ? action
+                              : null,
+                          child: const Center(child: Text('SIGN IN')),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _actionLogin.close();
+    _scrollController.dispose();
+    super.dispose();
+  }
+}

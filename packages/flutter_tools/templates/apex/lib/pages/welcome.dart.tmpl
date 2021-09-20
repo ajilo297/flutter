@@ -1,0 +1,35 @@
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:counter/bloc/app_cubit.dart';
+import 'package:counter/widgets/app_logo.dart';
+
+import '../themes/theme.dart';
+
+class WelcomePage extends StatelessWidget {
+  const WelcomePage({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) => Scaffold(
+        body: Container(
+          alignment: Alignment.center,
+          padding: const EdgeInsets.all(kPadding * 3),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              const AppLogo(),
+              const Text(
+                'Welcome to Counter, this seems to be your first run!',
+                textAlign: TextAlign.center,
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  AppCubit.instance.firstRunDone();
+                  Navigator.of(context).pop();
+                },
+                child: const Text('Continue'),
+              )
+            ],
+          ),
+        ),
+      );
+}

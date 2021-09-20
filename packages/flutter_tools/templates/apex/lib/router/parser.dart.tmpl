@@ -1,0 +1,21 @@
+import 'package:auto_route/auto_route.dart';
+import 'package:flutter/material.dart';
+
+import 'auth_guard.dart';
+
+class RouteParser extends DefaultRouteParser {
+  
+  RouteParser(
+    matcher, {
+    bool includePrefixMatches = false,
+  }) : super(matcher, includePrefixMatches: includePrefixMatches);
+
+  @override
+  Future<UrlState> parseRouteInformation(
+    RouteInformation routeInformation,
+  ) async {
+    debugPrint('deeplink> ${routeInformation.location}');
+    // TODO: Configure deeplinks here
+    return super.parseRouteInformation(routeInformation);
+  }
+}

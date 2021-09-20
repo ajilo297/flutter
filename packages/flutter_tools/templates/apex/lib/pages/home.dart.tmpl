@@ -1,0 +1,33 @@
+import 'dart:async';
+
+import 'package:flutter/material.dart';
+
+import '../router/router.dart';
+import '../utils/app_snackbar.dart';
+
+class HomeWrapperPage extends StatelessWidget {
+  const HomeWrapperPage({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) => const AutoRouter();
+}
+
+class HomePage extends StatelessWidget {
+  const HomePage({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Home'),
+        actions: [
+          IconButton(
+            onPressed: () => context.router.push(const SettingsRoute()),
+            icon: const Icon(Icons.settings),
+          ),
+        ],
+      ),
+      body: const Center(child: Text('Counter')),
+    );
+  }
+}

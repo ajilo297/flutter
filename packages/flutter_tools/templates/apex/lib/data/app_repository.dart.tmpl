@@ -1,0 +1,64 @@
+import 'dart:async';
+
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:package_info_plus/package_info_plus.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+class AppRepository {
+  static const String termsUrl = '';
+  static const String privacyPolicyUrl = '';
+
+  static const kPrefsLanguage = 'language';
+  static const kPrefsAccessToken = 'accessToken';
+  static const kPrefsEnvironment = 'environment';
+  static const kPrefsFirstRun = 'firstRun';
+  static const kPrefsEmail = 'email';
+
+  static AppRepository get instance => _instance;
+  static final AppRepository _instance = AppRepository._internal();
+
+  AppRepository._internal();
+
+  Future<AppRepository> init() async {
+    _instance._prefs = await SharedPreferences.getInstance();
+    _instance._packageInfo = await PackageInfo.fromPlatform();
+    _instance._accessToken = prefs.getString(kPrefsAccessToken);
+    return _instance;
+  }
+
+  String? _accessToken;
+
+  String? get accessToken => _accessToken;
+
+  set accessToken(String? accessToken) {
+    _accessToken = accessToken;
+    if (accessToken == null) {
+      prefs.remove(kPrefsAccessToken);
+    } else {
+      prefs.setString(kPrefsAccessToken, accessToken);
+    }
+  }
+
+  late PackageInfo _packageInfo;
+
+  PackageInfo get packageInfo => _packageInfo;
+
+  String get packageName => _packageInfo.packageName;
+
+  late SharedPreferences _prefs;
+
+  SharedPreferences get prefs => _prefs;
+
+  Function()? onApiLoaded;
+  Function()? onApiLoading;
+
+  final FirebaseAnalytics analytics = FirebaseAnalytics();
+
+  Future<void> sendAnalyticsEvent(
+      String name, Map<String, dynamic> params) async {
+    await analytics.logEvent(
+      name: name,
+      parameters: params,
+    );
+  }
+}

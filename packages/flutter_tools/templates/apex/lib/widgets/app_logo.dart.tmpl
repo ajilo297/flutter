@@ -1,0 +1,22 @@
+import 'package:flutter/material.dart';
+
+class AppLogo extends StatelessWidget {
+  final double maxHeight;
+  final String assetPath;
+
+  const AppLogo({
+    this.maxHeight = 300.0,
+    this.assetPath = '', // TODO: Add app logo path here
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) => ConstrainedBox(
+        constraints: BoxConstraints(maxHeight: maxHeight),
+        child: SafeArea(
+          child: assetPath.isEmpty
+              ? FlutterLogo(size: maxHeight)
+              : Image.asset(assetPath),
+        ),
+      );
+}

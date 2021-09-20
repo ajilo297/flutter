@@ -1,0 +1,24 @@
+class APIRepository {
+  static APIRepository get instance => _instance;
+  static final APIRepository _instance = APIRepository._internal();
+
+  APIRepository._internal() {
+    // TODO: Uncomment after setting up openapi
+    // _openapi.dio.options
+    //   ..connectTimeout = 5000
+    //   ..receiveTimeout = 5000
+    //   ..sendTimeout = 15000;
+    // _openapi.dio.interceptors.add(DioInterceptors());
+  }
+
+  static const String liveBasePath = ''; // TODO: Set live base path
+  static const String sandboxBasePath = ''; // TODO: Set sandbox base path
+
+  // TODO: Uncomment after setting up openapi
+  // static final Openapi _openapi = Openapi(
+  //   basePathOverride: kReleaseMode ? liveBasePath : null,
+  //   interceptors: [],
+  // );
+  // 
+  // Openapi get api => _openapi;
+}

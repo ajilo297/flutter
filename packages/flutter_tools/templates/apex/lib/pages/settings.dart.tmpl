@@ -1,0 +1,74 @@
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:counter/widgets/app_version.dart';
+
+import '../bloc/app_cubit.dart';
+import '../bloc/auth_cubit.dart';
+import '../themes/theme.dart';
+
+class SettingsPage extends StatelessWidget {
+  const SettingsPage({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) => BlocBuilder<AppCubit, AppState>(
+        builder: (context, state) {
+          final cubit = context.watch<AuthCubit>();
+          return Scaffold(
+            bottomNavigationBar: const SafeArea(
+              child: SizedBox(
+                width: double.infinity,
+                child: AppVersion(),
+              ),
+            ),
+            appBar: AppBar(
+              centerTitle: true,
+              title: const Text('Settings'),
+              leading: IconButton(
+                icon: const Icon(Icons.keyboard_arrow_left),
+                onPressed: () => Navigator.of(context).pop(),
+              ),
+            ),
+            body: ListView(
+              children: [
+                Card(
+                  child: ListTile(
+                    contentPadding: const EdgeInsets.all(kPadding * 2),
+                    leading: const Icon(Icons.dark_mode),
+                    trailing: CupertinoSwitch(
+                      value: Theme.of(context).brightness == Brightness.dark,
+                      onChanged: (value) {
+                        context.read<AppCubit>().switchTheme(
+                              !value
+                                  ? AppTheme.lightStandard
+                                  : AppTheme.darkStandard,
+                            );
+                      },
+                    ),
+                    title: const Text('Dark Mode'),
+                    onTap: () {
+                      context.read<AppCubit>().switchTheme(
+                            Theme.of(context).brightness == Brightness.dark
+                                ? AppTheme.lightStandard
+                                : AppTheme.darkStandard,
+                          );
+                    },
+                  ),
+                ),
+                Card(
+                  child: ListTile(
+                    contentPadding: const EdgeInsets.all(kPadding * 2),
+                    onTap: cubit.logout,
+                    leading: Icon(
+                      Icons.exit_to_app,
+                      color: Theme.of(context).errorColor,
+                    ),
+                    title: const Text('Logout'),
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      );
+}

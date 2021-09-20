@@ -1,0 +1,145 @@
+import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:google_fonts/google_fonts.dart';
+
+// TODO(ajil): Refactor typography to have H3-H6 instead of H1-H4
+abstract class AppFontWeight {
+  /// FontWeight value of `w900`
+  static const FontWeight black = FontWeight.w900;
+
+  /// FontWeight value of `w800`
+  static const FontWeight extraBold = FontWeight.w800;
+
+  /// FontWeight value of `w700`
+  static const FontWeight bold = FontWeight.w700;
+
+  /// FontWeight value of `w600`
+  static const FontWeight semiBold = FontWeight.w600;
+
+  /// FontWeight value of `w500`
+  static const FontWeight medium = FontWeight.w500;
+
+  /// FontWeight value of `w400`
+  static const FontWeight regular = FontWeight.w400;
+
+  /// FontWeight value of `w300`
+  static const FontWeight light = FontWeight.w300;
+
+  /// FontWeight value of `w200`
+  static const FontWeight extraLight = FontWeight.w200;
+
+  /// FontWeight value of `w100`
+  static const FontWeight thin = FontWeight.w100;
+}
+
+// ignore: avoid_classes_with_only_static_members
+class AppTextStyle {
+  static const _smallTextScaleFactor = 0.8;
+  static const _mediumTextScaleFactor = 1.2;
+
+  static final _baseTextStyle = GoogleFonts.openSans(
+    fontWeight: AppFontWeight.regular,
+  );
+
+  /// Headline 1 Text Style
+  static TextStyle get headline1 => _baseTextStyle.copyWith(
+        fontSize: 22,
+        fontWeight: AppFontWeight.semiBold,
+      );
+
+  /// Headline 2 Text Style
+  static TextStyle get headline2 => _baseTextStyle.copyWith(
+        fontSize: 20,
+        fontWeight: AppFontWeight.semiBold,
+      );
+
+  /// Headline 3 Text Style
+  static TextStyle get headline3 => _baseTextStyle.copyWith(
+        fontSize: 16,
+        fontWeight: AppFontWeight.semiBold,
+      );
+
+  /// Headline 4 Text Style
+  static TextStyle get headline4 => _baseTextStyle.copyWith(
+        fontSize: 16,
+        fontWeight: AppFontWeight.regular,
+      );
+
+  /// Headline 5 Text Style
+  static TextStyle get headline5 => _baseTextStyle.copyWith(
+        fontSize: 22,
+        fontWeight: AppFontWeight.medium,
+      );
+
+  /// Headline 6 Text Style
+  static TextStyle get headline6 => _baseTextStyle.copyWith(
+        fontSize: 22,
+        fontWeight: AppFontWeight.bold,
+      );
+
+  /// Subtitle 1 Text Style
+  static TextStyle get subtitle1 => _baseTextStyle.copyWith(
+        fontSize: 16,
+        fontWeight: AppFontWeight.bold,
+      );
+
+  /// Subtitle 2 Text Style
+  static TextStyle get subtitle2 => _baseTextStyle.copyWith(
+        fontSize: 14,
+        fontWeight: AppFontWeight.bold,
+      );
+
+  /// Body Text 1 Text Style
+  static TextStyle get bodyText1 => _baseTextStyle.copyWith(
+        fontSize: 14,
+        fontWeight: AppFontWeight.semiBold,
+      );
+
+  /// Body Text 2 Text Style (the default)
+  static TextStyle get bodyText2 => _baseTextStyle.copyWith(
+        fontSize: 14,
+        fontWeight: AppFontWeight.regular,
+      );
+
+  /// Caption Text Style
+  static TextStyle get caption => _baseTextStyle.copyWith(
+        fontSize: 12,
+        fontWeight: AppFontWeight.semiBold,
+      );
+
+  /// Overline Text Style
+  static TextStyle get overline => _baseTextStyle.copyWith(
+        fontSize: 16,
+        fontWeight: AppFontWeight.regular,
+      );
+
+  /// Button Text Style
+  static TextStyle get button => _baseTextStyle.copyWith(
+        fontSize: 18,
+        fontWeight: AppFontWeight.medium,
+      );
+
+  static TextTheme get textTheme => TextTheme(
+        headline1: headline1,
+        headline2: headline2,
+        headline3: headline3,
+        headline4: headline4,
+        headline5: headline2,
+        headline6: headline2,
+        subtitle1: bodyText1,
+        subtitle2: bodyText1,
+        bodyText1: bodyText1,
+        bodyText2: bodyText2,
+        overline: bodyText2,
+        button: bodyText1,
+        caption: caption,
+      );
+
+  static TextTheme get smallTextTheme => textTheme.apply(
+        fontSizeFactor: _smallTextScaleFactor,
+      );
+
+  static TextTheme get mediumTextTheme => textTheme.apply(
+        fontSizeFactor: _mediumTextScaleFactor,
+      );
+}

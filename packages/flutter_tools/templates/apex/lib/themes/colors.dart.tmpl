@@ -1,0 +1,65 @@
+import 'package:flutter/material.dart';
+
+// ignore: avoid_classes_with_only_static_members
+abstract class AppColors {
+  static const ColorScheme light = ColorScheme(
+    primary: primary,
+    primaryVariant: primary,
+    secondary: secondary,
+    secondaryVariant: secondary,
+    surface: surfaceLight,
+    background: backgroundLight,
+    error: errorLight,
+    onPrimary: onPrimaryLight,
+    onSecondary: onSecondaryLight,
+    onSurface: onSurfaceLight,
+    onBackground: onBackgroundLight,
+    onError: onErrorLight,
+    brightness: Brightness.light,
+  );
+
+  static const ColorScheme dark = ColorScheme(
+    primary: primary,
+    primaryVariant: primary,
+    secondary: secondary,
+    secondaryVariant: secondary,
+    surface: surfaceDark,
+    background: backgroundDark,
+    error: errorDark,
+    onPrimary: onPrimaryDark,
+    onSecondary: onSecondaryDark,
+    onSurface: onSurfaceDark,
+    onBackground: onBackgroundDark,
+    onError: onErrorDark,
+    brightness: Brightness.dark,
+  );
+
+  static const primary = Color(0xFF0099FF);
+  static const secondary = Color(0xFF212121);
+  static const validGreen = Color(0xFF4FC54D);
+  static const rectified = Color(0xFFDACE63);
+
+  /// Light Theme Colors
+  static const backgroundLight = Color(0xFFFAFAFA);
+  static const surfaceLight = Color(0xFFFFFFFF);
+  static const errorLight = Color(0xFFDA6363);
+  static const onPrimaryLight = Color(0xFFFAFAFA);
+  static const onSecondaryLight = Color(0xFFFFFFFF);
+  static const onBackgroundLight = Color(0xFF282A3B);
+  static const onSurfaceLight = Color(0xFF282A3B);
+  static const onErrorLight = Color(0xFFFFFFFF);
+
+  static const unknownLight = Color(0x66282A3B);
+
+  /// Dark Theme Colors
+  static const backgroundDark = Color(0xFF141416);
+  static const surfaceDark = Color(0xFF212121);
+  static const errorDark = Color(0xFFDA6363);
+  static const onPrimaryDark = Color(0xFFFFFFFF);
+  static const onSecondaryDark = Color(0xFFFFFFFF);
+  static const onBackgroundDark = Color(0xF5FFFFFF);
+  static const onSurfaceDark = Color(0xF5FFFFFF);
+  static const onErrorDark = Color(0xF5FFFFFF);
+
+  static const unknownDark = Color(0x66797b8a);
+}

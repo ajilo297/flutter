@@ -1,0 +1,56 @@
+import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
+import 'package:counter/bloc/app_cubit.dart';
+import 'package:counter/themes/theme.dart';
+
+class AppSnackbar {
+  static AppSnackbar get instance => _instance;
+
+  factory AppSnackbar() => _instance;
+  static final AppSnackbar _instance = AppSnackbar._internal();
+  static final scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
+
+  AppSnackbar._internal();
+
+  static void showInfo(String message,
+      {SnackBarAction? action,
+      Duration duration = const Duration(seconds: 4)}) {
+    scaffoldMessengerKey.currentState?.showSnackBar(
+      SnackBar(
+        duration: duration,
+        content: Text(message),
+        action: action ??
+            const SnackBarAction(
+              label: 'Dismiss',
+              onPressed: AppSnackbar.dismiss,
+            ),
+      ),
+    );
+  }
+
+  static void showError(String message, {SnackBarAction? action}) {
+    final theme = AppCubit.instance.state.theme ?? AppTheme.lightStandard;
+    scaffoldMessengerKey.currentState?.showSnackBar(
+      SnackBar(
+        backgroundColor: theme.errorColor,
+        content: Text(message),
+        action: action ??
+            SnackBarAction(
+              label: 'Dismiss',
+              onPressed: AppSnackbar.dismiss,
+              textColor: theme.colorScheme.onError,
+            ),
+        duration: const Duration(seconds: 30),
+      ),
+    );
+  }
+
+  static void showException(Object error, {SnackBarAction? action}) {
+    showError(error is DioError ? error.message : error.toString(),
+        action: action);
+  }
+
+  static void dismiss() {
+    scaffoldMessengerKey.currentState?.removeCurrentSnackBar();
+  }
+}

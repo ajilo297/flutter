@@ -1,0 +1,62 @@
+import 'dart:io';
+
+import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
+
+import '../bloc/app_cubit.dart';
+import 'app_repository.dart';
+
+class DioInterceptors extends Interceptor {
+  @override
+  void onRequest(
+      RequestOptions options, RequestInterceptorHandler handler) async {
+    AppRepository.instance.onApiLoading?.call();
+    if (AppCubit.instance.state.locale != null) {
+      options.headers['Accept-Language'] =
+          AppCubit.instance.state.locale!.languageCode;
+    }
+    if (AppRepository.instance.accessToken != null) {
+      options.headers['Authorization'] =
+          'Bearer ${AppRepository.instance.accessToken}';
+    }
+    if(!kIsWeb) {
+      options.headers['User-Agent'] =
+      '${AppRepository.instance.packageInfo.packageName}/${AppRepository
+          .instance.packageInfo.version}';
+    }
+    handler.next(options);
+  }
+
+  @override
+  void onResponse(Response response, ResponseInterceptorHandler handler) {
+    AppRepository.instance.onApiLoaded?.call();
+    handler.next(response);
+  }
+
+  @override
+  void onError(DioError err, ErrorInterceptorHandler handler) async {
+    if (err.type == DioErrorType.response) {
+      if (err.response != null) {
+        if (err.response!.statusCode == 503) {
+          err.error = 'Server maintenance - try again later';
+        } else if (err.response!.statusCode! >= 400 &&
+            err.response!.statusCode! < 500) {
+
+          // TODO: Handle custom server errors
+          
+        } else if (err.response?.statusCode == 500) {
+          err.error = 'Server fault - work in progress';
+        }
+      } else {
+        err.error = 'Server unreachable';
+      }
+    } else if (err.type == DioErrorType.connectTimeout ||
+        err.type == DioErrorType.receiveTimeout ||
+        err.type == DioErrorType.sendTimeout) {
+      err.error = 'Server connection timed out - check your connection';
+    } else if(err.type == DioErrorType.other  && err.error is SocketException) {
+      err.error = 'You seem to be offline';
+    }
+    handler.next(err);
+  }
+}

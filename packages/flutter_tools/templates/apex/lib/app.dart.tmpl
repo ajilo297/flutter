@@ -1,0 +1,98 @@
+import 'package:firebase_analytics/observer.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+
+import 'bloc/app_cubit.dart';
+import 'bloc/auth_cubit.dart';
+import 'bloc/bloc_observer.dart';
+import 'data/app_repository.dart';
+import 'router/parser.dart';
+import 'router/router.dart';
+import 'themes/theme.dart';
+import 'utils/app_snackbar.dart';
+import 'widgets/sandbox_indicator.dart';
+
+class CounterApp extends StatelessWidget {
+  CounterApp({Key? key}) : super(key: key) {
+    Bloc.observer = AppBlocObserver();
+  }
+
+  final _appRouter = AppRouter();
+
+  @override
+  Widget build(BuildContext context) => MultiBlocProvider(
+        providers: [
+          BlocProvider<AppCubit>.value(value: AppCubit.instance),
+          BlocProvider<AuthCubit>.value(value: AuthCubit.instance),
+        ],
+        child: BlocConsumer<AppCubit, AppState>(
+          bloc: AppCubit.instance,
+          listenWhen: (prev, next) => prev is! AppStarted && next is AppStarted,
+          listener: (context, appState) {
+            AuthCubit.instance.autoLogin();
+          },
+          // TODO: Uncomment after configuring Openapi
+          builder: (context, appState) => BlocConsumer<AuthCubit, dynamic>(
+            listenWhen: (prev, next) => next != null && next != prev,
+            listener: (context, state) async {
+              if ((state ?? false) ) {
+                // Login...
+              } else {
+                // Logout...
+              }
+            },
+            builder: (context, state) => MaterialApp.router(
+              debugShowCheckedModeBanner: false,
+              scaffoldMessengerKey: AppSnackbar.scaffoldMessengerKey,
+              title: 'Counter',
+              routeInformationParser: RouteParser(_appRouter.matcher),
+              theme: appState.theme ?? AppTheme.lightStandard,
+              routerDelegate: AutoRouterDelegate.declarative(
+                _appRouter,
+                routes: (_) {
+                  if (appState is AppStarting) {
+                    return [const SplashRoute()];
+                  }
+                  return [
+                    if (state != null && state)
+                      const HomeRouter()
+                    else
+                      const LoginRoute(),
+                    if (appState is AppFirstRun) const WelcomeRoute(),
+                    const SplashRoute()
+                  ];
+                },
+                navigatorObservers: () => [
+                  FirebaseAnalyticsObserver(
+                    analytics: AppRepository.instance.analytics,
+                  ),
+                ],
+              ),
+              builder: appState is AppStarted &&
+                      appState.environment == AppEnvironment.sandbox
+                  ? (context, widget) => Stack(
+                        children: [
+                          widget!,
+                          const Align(
+                            alignment: Alignment.topLeft,
+                            child: SandboxIndicator(),
+                          ),
+                        ],
+                      )
+                  : null,
+              supportedLocales: const [
+                Locale('en', ''),
+              ],
+              locale: appState.locale,
+              localizationsDelegates: const [
+                GlobalMaterialLocalizations.delegate,
+                GlobalWidgetsLocalizations.delegate,
+                GlobalCupertinoLocalizations.delegate,
+              ],
+            ),
+          ),
+        ),
+      );
+}

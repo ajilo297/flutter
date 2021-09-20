@@ -1,0 +1,102 @@
+import 'dart:ui';
+
+import 'package:equatable/equatable.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
+
+import '../constants.dart';
+import '../data/api_repository.dart';
+import '../data/app_repository.dart';
+import '../utils/app_snackbar.dart';
+
+part 'app_state.dart';
+
+class AppCubit extends Cubit<AppState> {
+  static AppCubit get instance => _instance;
+
+  factory AppCubit() => _instance;
+  static final AppCubit _instance = AppCubit._internal();
+  final _repository = AppRepository.instance;
+
+  AppCubit._internal() : super(AppStarting()) {
+    init();
+  }
+
+  Locale get _getPrefsLocale =>
+      Locale(_repository.prefs.getString(AppRepository.kPrefsLanguage) ?? 'en');
+
+  AppEnvironment get _getPrefsEnvironment {
+    final prefsValue =
+        _repository.prefs.getString(AppRepository.kPrefsEnvironment) ??
+            (kDebugMode || (kIsWeb && Uri.base.host.endsWith('.dev'))
+                ? 'sandbox'
+                : 'live');
+    return AppEnvironment.values
+        .firstWhere((el) => describeEnum(el) == prefsValue);
+  }
+
+  Future<void> init() async {
+    await _repository.init();
+    final environment = _getPrefsEnvironment;
+    _activateEnvironment(environment);
+    emit(_repository.prefs.getBool(AppRepository.kPrefsFirstRun) ?? true
+        ? AppFirstRun(locale: _getPrefsLocale)
+        : AppStarted(locale: _getPrefsLocale, environment: environment));
+  }
+
+  void firstRunDone() {
+    _repository.prefs.setBool(AppRepository.kPrefsFirstRun, false);
+    emit(AppStarted(locale: state.locale, environment: _getPrefsEnvironment));
+  }
+
+  void _activateEnvironment(AppEnvironment environment) async {
+    final baseUrl = environment == AppEnvironment.live
+        ? APIRepository.liveBasePath
+        : APIRepository.sandboxBasePath;
+
+    // TODO: Uncomment after setting up ApiRepository
+    // APIRepository.instance.api.dio.options.baseUrl = baseUrl;
+
+    if (!kDebugMode) {
+      await SentryFlutter.init(
+        (options) {
+          options
+            ..dsn = kSentryDSN
+            ..environment = describeEnum(environment);
+        },
+      );
+    }
+  }
+
+  void switchTheme([ThemeData? theme]) {
+    final currentState = state;
+    if (currentState is AppStarted && currentState.theme != theme) {
+      emit(
+        AppStarted(
+            locale: currentState.locale,
+            environment: currentState.environment,
+            theme: theme),
+      );
+    }
+  }
+
+  void switchEnvironment([AppEnvironment? environment]) {
+    final appState = state;
+    if (appState is AppStarted) {
+      final newEnvironment = environment ??
+          (appState.environment == AppEnvironment.live
+              ? AppEnvironment.sandbox
+              : AppEnvironment.live);
+      if (newEnvironment != appState.environment) {
+        _repository.prefs.setString(
+            AppRepository.kPrefsEnvironment, describeEnum(newEnvironment));
+        _activateEnvironment(newEnvironment);
+        emit(AppStarted(locale: state.locale, environment: newEnvironment));
+        AppSnackbar.showInfo(
+            'Switched to ${describeEnum(newEnvironment)} environment');
+      }
+    }
+  }
+}

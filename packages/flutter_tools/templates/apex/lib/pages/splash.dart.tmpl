@@ -1,0 +1,40 @@
+import 'dart:math';
+
+import 'package:flutter/material.dart';
+
+import '../router/router.dart';
+import '../widgets/app_logo.dart';
+
+class SplashPage extends StatefulWidget {
+  const SplashPage({Key? key}) : super(key: key);
+
+  @override
+  _SplashPageState createState() => _SplashPageState();
+}
+
+class _SplashPageState extends State<SplashPage> {
+  static const _kDuration = Duration(milliseconds: 700);
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
+      Future.delayed(_kDuration).then((value) async {
+        if (context.router.canPopSelfOrChildren) {
+          await context.router.pop();
+        }
+      });
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    final side = min(min(size.width, size.height) * 0.5, 300).toDouble();
+    return Container(
+      alignment: Alignment.center,
+      color: Theme.of(context).backgroundColor,
+      child: AppLogo(maxHeight: side),
+    );
+  }
+}
