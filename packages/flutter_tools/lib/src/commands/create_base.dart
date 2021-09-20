@@ -72,9 +72,10 @@ abstract class CreateBase extends FlutterCommand {
       'with-driver-test',
       negatable: true,
       defaultsTo: false,
-      help: '(deprecated) Historically, this added a flutter_driver dependency and generated a '
-            'sample "flutter drive" test. Now it does nothing. Consider using the '
-            '"integration_test" package: https://pub.dev/packages/integration_test',
+      help:
+          '(deprecated) Historically, this added a flutter_driver dependency and generated a '
+          'sample "flutter drive" test. Now it does nothing. Consider using the '
+          '"integration_test" package: https://pub.dev/packages/integration_test',
       hide: !verboseHelp,
     );
     argParser.addFlag(
@@ -102,19 +103,19 @@ abstract class CreateBase extends FlutterCommand {
       help:
           'The project name for this new Flutter project. This must be a valid dart package name.',
     );
-    argParser.addOption(
-      'ios-language',
-      abbr: 'i',
-      defaultsTo: 'swift',
-      allowed: <String>['objc', 'swift'],
-      help: 'The language to use for iOS-specific code, either ObjectiveC (legacy) or Swift (recommended).'
-    );
+    argParser.addOption('ios-language',
+        abbr: 'i',
+        defaultsTo: 'swift',
+        allowed: <String>['objc', 'swift'],
+        help:
+            'The language to use for iOS-specific code, either ObjectiveC (legacy) or Swift (recommended).');
     argParser.addOption(
       'android-language',
       abbr: 'a',
       defaultsTo: 'kotlin',
       allowed: <String>['java', 'kotlin'],
-      help: 'The language to use for Android-specific code, either Java (legacy) or Kotlin (recommended).',
+      help:
+          'The language to use for Android-specific code, either Java (legacy) or Kotlin (recommended).',
     );
     argParser.addFlag(
       'skip-name-checks',
@@ -149,17 +150,16 @@ abstract class CreateBase extends FlutterCommand {
   /// The help message of the argument is replaced with `customHelp` if `customHelp` is not null.
   @protected
   void addPlatformsOptions({String customHelp}) {
-    argParser.addMultiOption('platforms',
+    argParser.addMultiOption(
+      'platforms',
       help: customHelp ?? _kDefaultPlatformArgumentHelp,
       defaultsTo: <String>[
         ..._kAvailablePlatforms,
-        if (featureFlags.isWindowsUwpEnabled)
-          'winuwp',
+        if (featureFlags.isWindowsUwpEnabled) 'winuwp',
       ],
       allowed: <String>[
         ..._kAvailablePlatforms,
-        if (featureFlags.isWindowsUwpEnabled)
-          'winuwp',
+        if (featureFlags.isWindowsUwpEnabled) 'winuwp',
       ],
     );
   }
@@ -257,13 +257,14 @@ abstract class CreateBase extends FlutterCommand {
   void validateProjectDir({bool overwrite = false}) {
     if (globals.fs.path.isWithin(flutterRoot, projectDirPath)) {
       // Make exception for dev and examples to facilitate example project development.
-      final String examplesDirectory = globals.fs.path.join(flutterRoot, 'examples');
+      final String examplesDirectory =
+          globals.fs.path.join(flutterRoot, 'examples');
       final String devDirectory = globals.fs.path.join(flutterRoot, 'dev');
       if (!globals.fs.path.isWithin(examplesDirectory, projectDirPath) &&
           !globals.fs.path.isWithin(devDirectory, projectDirPath)) {
         throwToolExit(
             'Cannot create a project within the Flutter SDK. '
-                "Target directory '$projectDirPath' is within the Flutter SDK at '$flutterRoot'.",
+            "Target directory '$projectDirPath' is within the Flutter SDK at '$flutterRoot'.",
             exitCode: 2);
       }
     }
@@ -294,7 +295,8 @@ abstract class CreateBase extends FlutterCommand {
         break;
       case FileSystemEntityType.link:
         // Do not overwrite links.
-        throwToolExit("Invalid project name: '$projectDirPath' - refers to a link.",
+        throwToolExit(
+            "Invalid project name: '$projectDirPath' - refers to a link.",
             exitCode: 2);
         break;
       default:
@@ -337,6 +339,7 @@ abstract class CreateBase extends FlutterCommand {
     bool windowsUwp = false,
     bool implementationTests = false,
   }) {
+    final String projectNamePascalCase = toTitleCase(camelCase(projectName));
     final String pluginDartClass = _createPluginClassName(projectName);
     final String pluginClass = pluginDartClass.endsWith('Plugin')
         ? pluginDartClass
@@ -357,6 +360,7 @@ abstract class CreateBase extends FlutterCommand {
     return <String, Object>{
       'organization': organization,
       'projectName': projectName,
+      'projectNamePascalCase': projectNamePascalCase,
       'androidIdentifier': androidIdentifier,
       'iosIdentifier': appleIdentifier,
       'macosIdentifier': appleIdentifier,
@@ -433,8 +437,8 @@ abstract class CreateBase extends FlutterCommand {
   ///
   /// If `overwrite` is true, overwrites existing files, `overwrite` defaults to `false`.
   @protected
-  Future<int> generateApp(
-      String templateName, Directory directory, Map<String, Object> templateContext,
+  Future<int> generateApp(String templateName, Directory directory,
+      Map<String, Object> templateContext,
       {bool overwrite = false, bool pluginExampleApp = false}) async {
     int generatedCount = 0;
     generatedCount += await renderMerged(
@@ -665,9 +669,7 @@ const Set<String> _packageDependencies = <String>{
 @visibleForTesting
 bool isValidPackageName(String name) {
   final Match match = _identifierRegExp.matchAsPrefix(name);
-  return match != null &&
-      match.end == name.length &&
-      !_keywords.contains(name);
+  return match != null && match.end == name.length && !_keywords.contains(name);
 }
 
 // Return null if the project name is legal. Return a validation message if

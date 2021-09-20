@@ -14,8 +14,8 @@ import 'themes/theme.dart';
 import 'utils/app_snackbar.dart';
 import 'widgets/sandbox_indicator.dart';
 
-class CounterApp extends StatelessWidget {
-  CounterApp({Key? key}) : super(key: key) {
+class {{projectNamePascalCase}}App extends StatelessWidget {
+  {{projectNamePascalCase}}App({Key? key}) : super(key: key) {
     Bloc.observer = AppBlocObserver();
   }
 
@@ -46,7 +46,7 @@ class CounterApp extends StatelessWidget {
             builder: (context, state) => MaterialApp.router(
               debugShowCheckedModeBanner: false,
               scaffoldMessengerKey: AppSnackbar.scaffoldMessengerKey,
-              title: 'Counter',
+              title: '{{projectNamePascalCase}}',
               routeInformationParser: RouteParser(_appRouter.matcher),
               theme: appState.theme ?? AppTheme.lightStandard,
               routerDelegate: AutoRouterDelegate.declarative(

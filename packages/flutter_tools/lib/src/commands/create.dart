@@ -221,7 +221,7 @@ class CreateCommand extends CreateBase {
     final String organization = await getOrganization();
 
     final bool overwrite = boolArg('overwrite');
-    validateProjectDir(overwrite: overwrite);
+    // validateProjectDir(overwrite: overwrite);
 
     if (boolArg('with-driver-test')) {
       globals.printError(

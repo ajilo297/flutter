@@ -38,7 +38,7 @@ Future<void> main() async {
       };
     }
     await AppRepository.instance.init();
-    runApp(CounterApp());
+    runApp({{projectNamePascalCase}}App());
   }, (exception, stackTrace) async {
     debugPrint('>>> $exception, $stackTrace');
 
